@@ -1,0 +1,10 @@
+{
+  "name": "moodle-atto_corrections-button",
+  "builds": {
+    "moodle-atto_corrections-button": {
+      "jsfiles": [
+        "button.js"
+      ]
+    }
+  }
+}

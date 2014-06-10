@@ -1,0 +1,49 @@
+
+
+.atto_corrections {
+    border-bottom: 2px #ff0000 dashed;
+}
+
+.atto_corrections_correction {
+    cursor: pointer;
+}
+
+.atto_corrections sup {
+    color: #ff0000;
+    border: none;
+    text-transform: uppercase;
+}
+
+.atto_corrections_comment {
+    border: 1px #cccccc solid;
+    background-color: #eeee00;
+    color: #000000;
+    padding: 0.1em 0.5em;
+    margin: 0 0.1em;
+    display: none;
+    font-family: monospace;
+    font-size: 0.8em;
+}
+
+.atto_corrections_fulltext .atto_corrections_comment {
+    display: inline;
+}
+
+.atto_corrections:hover .atto_corrections_comment {
+    display: inline;
+}
+
+/*
+.atto_corrections:after {
+    content: '!';
+    color: #ff0000;
+    font-size: 0.7em;
+    vertical-align: super;
+    text-transform: uppercase;
+}
+
+.atto_corrections_g:after {
+    content: 'g';
+}
+*/
+
