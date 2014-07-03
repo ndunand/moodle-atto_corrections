@@ -9,6 +9,9 @@
  */
 
 
+This plugin allows the Moodle administrator to define as many correction types as wanted (e.g. orthographic error, pronoun error, capitalization, etc.). Buttons in the Atto editor then allow users to make inline marks in texts.
+
+
 = Credits =
 
 Icon made by <a href="http://www.freepik.com">Freepik</a> from <a href="http://www.flaticon.com/free-icon/rubber-2_4374">www.flaticon.com</a>

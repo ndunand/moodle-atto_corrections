@@ -24,28 +24,28 @@
  */
 
 $string['pluginname'] = 'Corrections';
-$string['settings'] = 'Inline text corrections settings';
-$string['corrtypes'] = 'Correction types';
-$string['corrtypes_desc'] = 'Please enter one correction type per line, in the form "abbreviation = description".<br><strong>Warning:</strong> each abbreviation must be unique!';
+$string['settings'] = 'Réglages des corrections dans le texte';
+$string['corrtypes'] = 'Types de corrections';
+$string['corrtypes_desc'] = 'Entrez un type par ligne, sous la forme "abbréviation = description".<br><strong>Attention :</strong> chaque abbréviation doit être unique !';
 $string['corrtypes_default'] = '
-a = plurialization
-c = conjugation
-d = determinant
-g = grammar/syntax
-m = missing word(s)
-o = orthograph
-p = preposition
-t = tense
-v = vocabulary
-... = punctuation
-? = other
+a = accord
+c = conjugaison
+d = déterminant
+g = grammaire/syntaxe
+m = mot(s) manquant(s)
+o = orthographe
+p = préposition
+t = temps verbal
+v = vocabulaire
+... = ponctuation
+? = autre
 ';
-$string['addcomment'] = 'Add';
-$string['corrtype'] = 'Correction type';
-$string['corrtext'] = 'Comment';
-$string['dialogtitle'] = 'Add/modify a correction';
-$string['fulltexttitle'] = 'Text with correction marks';
-$string['addmark'] = 'Add a correction mark';
-$string['removemark'] = 'Remove this correction mark';
-$string['displayfulltext'] = 'Display text with correction marks';
+$string['addcomment'] = 'Enregistrer';
+$string['corrtype'] = 'Type de correction';
+$string['corrtext'] = 'Votre commentaire';
+$string['dialogtitle'] = 'Ajouter/modifier une correction';
+$string['fulltexttitle'] = 'Texte avec marques de correction';
+$string['addmark'] = 'Ajouter une marque de correction';
+$string['removemark'] = 'Supprimer cette marque de correction';
+$string['displayfulltext'] = 'Afficher texte avec marques';
 

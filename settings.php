@@ -31,23 +31,7 @@ $settings = new admin_settingpage('atto_corrections_settings', new lang_string('
 if ($ADMIN->fulltree) {
     $name = new lang_string('corrtypes', 'atto_corrections');
     $desc = new lang_string('corrtypes_desc', 'atto_corrections');
-    $default = '
-a = accord
-c = conjugaison
-d = déterminant
-g = grammaire/syntaxe
-m = mot(s) manquant(s)
-o = orthographe
-p = préposition
-t = temps verbal
-v = vocabulaire
-... = ponctuation
-? = autre
-';
-    $setting = new admin_setting_configtextarea('atto_corrections/corrtypes',
-                                                $name,
-                                                $desc,
-                                                $default);
+    $default = new lang_string('corrtypes_default', 'atto_corrections');
+    $setting = new admin_setting_configtextarea('atto_corrections/corrtypes', $name, $desc, $default);
     $settings->add($setting);
-
 }
