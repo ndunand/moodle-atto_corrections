@@ -1,3 +1,5 @@
+YUI.add('moodle-atto_corrections-button', function (Y, NAME) {
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -12,8 +14,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-YUI.add('moodle-atto_corrections-button', function (Y, NAME) {
 
 /**
  * Atto text editor integration version file.
@@ -191,6 +191,7 @@ tttt = this; // TODO : remove
      * @private
      */
     _removeCorrection: function(e) {
+        e.preventDefault();
         // get the selection grandparent (because the parent is only the text node)
         var el = this.get('host').getSelectionParentNode().parentNode;
         if (el.nodeName.toLowerCase() === 'span' && el.className.indexOf(CSS.SPAN) !== -1) {
@@ -322,7 +323,6 @@ ffff = form;
                 // new correction mark
                 var uniqueclass = 'ts' + new Date().getTime();
                 host.toggleInlineSelectionClass([CSS.SPAN, CSS.BASECLASS + ctype, uniqueclass]);
-//                var node0 = Y.Node.create('<span class="' + CSS.CORRSPAN + '" onclick="if (Y.Node(this).ancestor(\'div.editor_atto_content\')) { } else { Y.Node(this).one(\'.atto_corrections_comment\').getDOMNode().style.display = \'inline\'; }"/>'),                    node1 = Y.Node.create('<span class="' + CSS.CORRTEXT + '">' + ctext + '</span>'),
                 var node0 = Y.Node.create('<span class="' + CSS.CORRSPAN + '"/>'),
                     node1 = Y.Node.create('<span class="' + CSS.CORRTEXT + '">' + ctext + '</span>'),
                     node2 = Y.Node.create('<sup title="' + ctext + '">' + ctype + '</sup>');
@@ -395,6 +395,8 @@ ffff = form;
         }
     }
 });
+
+
 
 
 }, '@VERSION@', {"requires": ["moodle-editor_atto-plugin"]});

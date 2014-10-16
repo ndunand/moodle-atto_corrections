@@ -13,47 +13,65 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
- * @package    atto_media
- * @copyright  2013 Damyon Wiese  <damyon@moodle.com>
+/**
+ * Atto text editor integration version file.
+ *
+ * @package    atto_corrections
+ * @copyright  2014 Université de Lausanne
+ * @author     Nicolas Dunand <nicolas.dunand@unil.ch>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * @module moodle-atto_media-button
+ * @module moodle-atto_corrections-button
  */
 
 /**
- * Atto media selection tool.
+ * Atto corrections tool.
  *
- * @namespace M.atto_media
+ * @namespace M.atto_corrections
  * @class Button
  * @extends M.editor_atto.EditorPlugin
  */
 
-var COMPONENTNAME = 'atto_media',
+var COMPONENTNAME = 'atto_corrections',
     CSS = {
-        URLINPUT: 'atto_media_urlentry',
-        NAMEINPUT: 'atto_media_nameentry'
+        FORM : 'atto_formcorrections',
+        SPAN : 'atto_corrections',
+        CORRSPAN : 'atto_corrections_correction',
+        CORRTEXT : 'atto_corrections_comment',
+        BASECLASS : 'atto_corrections_',
+        SELECT : 'atto_corrections_select',
+        TEXTAREA : 'atto_corrections_textarea',
+        FULLTEXT : 'atto_corrections_fulltext'
     },
     SELECTORS = {
-        URLINPUT: '.' + CSS.URLINPUT,
-        NAMEINPUT: '.' + CSS.NAMEINPUT
+        SPAN: '.' + CSS.SPAN,
+        SELECT: '.' + CSS.SELECT,
+        TEXTAREA: '.' + CSS.TEXTAREA
     },
-    TEMPLATE = '' +
-        '<form class="atto_form">' +
-            '<label for="{{elementid}}_atto_media_urlentry">{{get_string "enterurl" component}}</label>' +
-            '<input class="fullwidth {{CSS.URLINPUT}}" type="url" id="{{elementid}}_atto_media_urlentry" size="32"/><br/>' +
-            '<button class="openmediabrowser" type="button">{{get_string "browserepositories" component}}</button>' +
-            '<label for="{{elementid}}_atto_media_nameentry">{{get_string "entername" component}}</label>' +
-            '<input class="fullwidth {{CSS.NAMEINPUT}}" type="text" id="{{elementid}}_atto_media_nameentry" size="32" required="true"/>' +
-            '<div class="mdl-align">' +
-                '<br/>' +
-                '<button class="submit" type="submit">{{get_string "createmedia" component}}</button>' +
-            '</div>' +
-        '</form>';
+    TEMPLATES = {
+        DIALOGUE : '' +
+            '<form class="atto_form {{CSS.FORM}}">' +
+                '<label for="{{elementid}}_atto_corrections_corrtype">{{get_string "corrtype" component}}</label>' +
+                '<select id="{{elementid}}_atto_corrections_corrtype" class="{{CSS.SELECT}}">' +
+                    '{{#each corrtypes}}' +
+                    '<option value="{{{abbr}}}">{{{descr}}}</option>' +
+                    '{{/each}}' +
+                '</select>' +
+                '<label for="{{elementid}}_atto_corrections_corrtext">{{get_string "corrtext" component}}</label>' +
+                '<textarea class="fullwidth {{CSS.TEXTAREA}}" type="text" id="{{elementid}}_atto_corrections_corrtext">' +
+                '</textarea>' +
+                '<div class="mdl-align">' +
+                    '<br/>' +
+                    '<button class="submit" type="submit">{{get_string "addcomment" component}}</button>' +
+                '</div>' +
+            '</form>',
+        FULLTEXT : '' +
+            '<div class="{{CSS.FULLTEXT}}">{{fulltext}}</div>'
+    };
 
-Y.namespace('M.atto_media').Button = Y.Base.create('button', Y.M.editor_atto.EditorPlugin, [], {
+Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_atto.EditorPlugin, [], {
 
     /**
      * A reference to the current selection at the time that the dialogue
@@ -74,37 +92,170 @@ Y.namespace('M.atto_media').Button = Y.Base.create('button', Y.M.editor_atto.Edi
      */
     _content: null,
 
+    /**
+     * A reference to the isoncorr property.
+     *
+     * @property _isoncorr
+     * @type bool
+     * @private
+     */
+    _isoncorr: null,
+
     initializer: function() {
-        if (this.get('host').canShowFilepicker('media')) {
-            this.addButton({
-                icon: 'e/insert_edit_video',
-                callback: this._displayDialogue
+
+
+
+
+
+tttt = this; // TODO : remove
+
+
+
+
+
+        // add correction mark
+        var items = [],
+            itemid = 0;
+        Y.Array.each(this.get('corrtypes'), function(corrtype) {
+            items.push({
+                text: corrtype.descr,
+                callbackArgs: new Array(itemid, corrtype.descr)
             });
+            itemid++;
+        });
+        this.addToolbarMenu({
+            icon: M.util.image_url('icon1', COMPONENTNAME),
+            globalItemConfig: {
+                callback: this._addCorrection
+            },
+            items: items,
+            buttonName: 'corrections1',
+            title: 'addmark'
+        });
+
+        // remove correction mark
+        this.addButton({
+            icon: M.util.image_url('icon2', COMPONENTNAME),
+            callback: this._removeCorrection,
+            tags: SELECTORS.SPAN,
+            buttonName: 'corrections2',
+            title: 'removemark'
+        });
+
+        // display full text with marks
+        this.addButton({
+            icon: M.util.image_url('icon3', COMPONENTNAME),
+            callback: this._displayFulltext,
+            buttonName: 'corrections3',
+            title: 'displayfulltext'
+        });
+
+        // Enable the event listener once everything has loaded.
+        this.get('host').on('pluginsloaded', function() {
+            this.get('host').on('atto:selectionchanged', this._updateButtonsStates, this);
+        }, this);
+
+        this._updateButtonsStates();
+
+    },
+
+    /**
+     * Add a correction on the current selection
+     *
+     * @method _addCorrection
+     * @param {EventFacade} e
+     * @private
+     */
+    _addCorrection: function(e, args) {
+        // Store the current selection.
+        this._currentSelection = this.get('host').getSelection();
+        if (this._currentSelection === false || this._currentSelection.collapsed) {
+            return;
+        }
+        var selectednode = this.get('host').getSelectionParentNode();
+        // Note this is a document fragment and YUI doesn't like them.
+        if (!selectednode) {
+            return;
+        }
+        this._displayDialogue(args, selectednode);
+//        console.log(args);
+    },
+
+    /**
+     * Remove a correction around the cursor
+     *
+     * @method _removeCorrection
+     * @param {EventFacade} e
+     * @private
+     */
+    _removeCorrection: function(e) {
+        e.preventDefault();
+        // get the selection grandparent (because the parent is only the text node)
+        var el = this.get('host').getSelectionParentNode().parentNode;
+        if (el.nodeName.toLowerCase() === 'span' && el.className.indexOf(CSS.SPAN) !== -1) {
+            Y.Node(el).one('.' + CSS.CORRSPAN).remove();
+            el.parentNode.replaceChild(document.createTextNode(el.innerHTML), el);
         }
     },
 
     /**
-     * Display the media editing tool.
+     * Display the full text with corrections
+     *
+     * @method _displayFulltext
+     * @private
+     */
+    _displayFulltext: function() {
+        var dialogue = this.getDialogue({
+            headerContent: M.util.get_string('fulltexttitle', COMPONENTNAME),
+            focusAfterHide: true,
+            width: 600
+        });
+
+        var template = Y.Handlebars.compile(TEMPLATES.FULLTEXT);
+
+        var content = Y.Node.create(template({
+            component: COMPONENTNAME,
+            CSS: CSS,
+            fulltext : new Y.Handlebars.SafeString(this.get('host').editor.getHTML())
+        }));
+
+        dialogue.set('bodyContent', content)
+                .show();
+    },
+
+    /**
+     * Display the corrections dialog
      *
      * @method _displayDialogue
      * @private
      */
-    _displayDialogue: function() {
-        // Store the current selection.
-        this._currentSelection = this.get('host').getSelection();
-        if (this._currentSelection === false) {
-            return;
+    _displayDialogue: function(args, selectednode) {
+
+nnnn = selectednode;
+        var ctype = false,
+            ctext = false;
+
+        if (this._isoncorr) {
+            ctype = selectednode.parentNode.className.replace(CSS.SPAN + ' ' + CSS.BASECLASS, '').replace(' ', '');
+            ctext = Y.Node(selectednode.parentNode).one('.atto_corrections_comment').getDOMNode().innerHTML;
         }
 
         var dialogue = this.getDialogue({
-            headerContent: M.util.get_string('createmedia', COMPONENTNAME),
+            headerContent: M.util.get_string('dialogtitle', COMPONENTNAME),
             focusAfterHide: true,
-            focusOnShowSelector: SELECTORS.URLINPUT
+            focusOnShowSelector: SELECTORS.TEXTAREA // TODO : doesn't work!!!
         });
 
         // Set the dialogue content, and then show the dialogue.
         dialogue.set('bodyContent', this._getDialogueContent())
                 .show();
+        if (!this._isoncorr) {
+           Y.one('.atto_form.' + CSS.FORM + ' select').set('selectedIndex', args[0]); // TODO correct DOM selector!
+        }
+        else {
+           Y.one('.atto_form.' + CSS.FORM + ' select').set('selectedIndex', this.get('corrtypekeys').indexOf(ctype));
+           Y.one('.atto_form.' + CSS.FORM + ' textarea').set('value', ctext);
+        }
     },
 
     /**
@@ -116,64 +267,131 @@ Y.namespace('M.atto_media').Button = Y.Base.create('button', Y.M.editor_atto.Edi
      * @private
      */
     _getDialogueContent: function() {
-        var template = Y.Handlebars.compile(TEMPLATE);
+        var template = Y.Handlebars.compile(TEMPLATES.DIALOGUE);
 
         this._content = Y.Node.create(template({
             component: COMPONENTNAME,
             elementid: this.get('host').get('elementid'),
-            CSS: CSS
+            CSS: CSS,
+            corrtypes: this.get('corrtypes')
         }));
 
-        this._content.one('.submit').on('click', this._setMedia, this);
-        this._content.one('.openmediabrowser').on('click', function(e) {
-            e.preventDefault();
-            this.get('host').showFilepicker('media', this._filepickerCallback, this);
-        }, this);
+        this._content.one('.submit').on('click', this._setCorrection, this);
 
         return this._content;
     },
 
     /**
-     * Update the dialogue after an media was selected in the File Picker.
+     * Add or update a correction.
      *
-     * @method _filepickerCallback
-     * @param {object} params The parameters provided by the filepicker
-     * containing information about the image.
+     * @method setCorrection
+     * @param {EventFacade} e
      * @private
      */
-    _filepickerCallback: function(params) {
-        if (params.url !== '') {
-            this._content.one(SELECTORS.URLINPUT)
-                    .set('value', params.url);
-            this._content.one(SELECTORS.NAMEINPUT)
-                    .set('value', params.file);
+    _setCorrection: function(e) {
+        e.preventDefault();
+        this.getDialogue({
+            focusAfterHide: this._currentSelection
+        }).hide();
+
+//        this._removeCorrection();
+
+        var form = e.currentTarget.ancestor('.atto_form'),
+            ctype = form.one(SELECTORS.SELECT).get('value'),
+            ctext = form.one(SELECTORS.TEXTAREA).get('value'),
+            host = this.get('host');
+ffff = form;
+        if (ctype !== '') {
+            // restore original selection, in order to be able to work on it
+//            return;
+            host.setSelection(this._currentSelection);
+            if (this._isoncorr) {
+                // replace existing correction mark:
+                //  - get the orignal node
+                var ynode = Y.Node(host.getSelectionParentNode().parentNode);
+                //  - insert the new comment
+                ynode.one('.' + CSS.CORRTEXT).getDOMNode().innerHTML = ctext;
+                //  - add correct class
+                var newclass = CSS.SPAN + ' ' + CSS.BASECLASS + ctype;
+                ynode.one('.' + CSS.CORRTEXT).getDOMNode().parentNode.parentNode.className = newclass;
+                //  - add the correct <sup> mark
+                ynode.one('sup').getDOMNode().innerHTML = ctype;
+            }
+            else {
+                // new correction mark
+                var uniqueclass = 'ts' + new Date().getTime();
+                host.toggleInlineSelectionClass([CSS.SPAN, CSS.BASECLASS + ctype, uniqueclass]);
+                var node0 = Y.Node.create('<span class="' + CSS.CORRSPAN + '"/>'),
+                    node1 = Y.Node.create('<span class="' + CSS.CORRTEXT + '">' + ctext + '</span>'),
+                    node2 = Y.Node.create('<sup title="' + ctext + '">' + ctype + '</sup>');
+                Y.one('.' + uniqueclass).appendChild(node0);
+                Y.one('.' + uniqueclass).removeClass(uniqueclass);
+                node0.appendChild(node2.getDOMNode());
+                node0.appendChild(node1.getDOMNode());
+            }
+            this.markUpdated();
         }
     },
 
     /**
-     * Update the media in the contenteditable.
+     * Update the states of the buttons.
      *
-     * @method setMedia
-     * @param {EventFacade} e
+     * @method _updateButtonsStates
      * @private
      */
-    _setMedia: function(e) {
-        e.preventDefault();
-        this.getDialogue({
-            focusAfterHide: null
-        }).hide();
+    _updateButtonsStates: function() {
+        var el = this.get('host').getSelectionParentNode().parentNode,
+            sel = rangy.getSelection();
 
-        var form = e.currentTarget.ancestor('.atto_form'),
-            url = form.one(SELECTORS.URLINPUT).get('value'),
-            name = form.one(SELECTORS.NAMEINPUT).get('value'),
-            host = this.get('host');
+        if (!sel.rangeCount) {
+            this.disableButtons('corrections1');
+            this.disableButtons('corrections2');
+            return;
+        }
 
-        if (url !== '' && name !== '') {
-            host.setSelection(this._currentSelection);
-            var mediahtml = '<a href="' + Y.Escape.html(url) + '">' + name + '</a>';
+        var cs = sel.getRangeAt(0);
 
-            host.insertContentAtFocusPoint(mediahtml);
-            this.markUpdated();
+        this._isoncorr = el.nodeName.toLowerCase() === 'span' && el.className.indexOf(CSS.SPAN) !== -1;
+
+        if (this._isoncorr) {
+            this.enableButtons('corrections2');
+        }
+        else {
+            this.disableButtons('corrections2');
+        }
+        if ((cs.collapsed && !this._isoncorr) || (!cs.collapsed && this._isoncorr)) {
+            this.disableButtons('corrections1');
+        }
+        else {
+            this.enableButtons('corrections1');
+        }
+    }
+
+
+}, {
+    ATTRS: {
+        /**
+         * The list of correction types to display.
+         *
+         * @attribute corrtypes
+         * @type array
+         * @default {}
+         */
+        corrtypes: {
+            value: {}
+        },
+
+        /**
+         * The list of correction types abbreviations to display.
+         *
+         * @attribute corrtypekeys
+         * @type array
+         * @default {}
+         */
+        corrtypekeys: {
+            value: {}
         }
     }
 });
+
+
