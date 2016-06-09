@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015101200;
+$plugin->version   = 2016060900;
 $plugin->requires  = 2014050800;
 $plugin->component = 'atto_corrections';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.2 for Moodle 2.7-2.9';
+$plugin->release = '1.0.3 for Moodle 2.7-3.1';
 

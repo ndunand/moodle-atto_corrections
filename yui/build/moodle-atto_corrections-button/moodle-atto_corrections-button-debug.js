@@ -322,7 +322,9 @@ ffff = form;
             else {
                 // new correction mark
                 var uniqueclass = 'ts' + new Date().getTime();
-                host.toggleInlineSelectionClass([CSS.SPAN, CSS.BASECLASS + ctype, uniqueclass]);
+                host.toggleInlineSelectionClass([CSS.SPAN]);
+                host.toggleInlineSelectionClass([CSS.BASECLASS + ctype]);
+                host.toggleInlineSelectionClass([uniqueclass]);
                 var node0 = Y.Node.create('<span class="' + CSS.CORRSPAN + '"/>'),
                     node1 = Y.Node.create('<span class="' + CSS.CORRTEXT + '">' + ctext + '</span>'),
                     node2 = Y.Node.create('<sup title="' + ctext + '">' + ctype + '</sup>');
