@@ -48,4 +48,5 @@ $string['fulltexttitle'] = 'Text with correction marks';
 $string['addmark'] = 'Add a correction mark';
 $string['removemark'] = 'Remove this correction mark';
 $string['displayfulltext'] = 'Display text with correction marks';
+$string['privacy:metadata'] = 'The atto_corrections plugin does not store any personal data.';
 
