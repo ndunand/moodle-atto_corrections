@@ -48,17 +48,23 @@ function atto_corrections_strings_for_js() {
  * @param string $elementid
  */
 function atto_corrections_params_for_js($elementid, $options, $fpoptions) {
+    global $COURSE;
     // Pass the number of visible groups as a param.
     $corrtypes = get_config('atto_corrections', 'corrtypes');
     $list = explode("\n", (str_replace("\r", '', $corrtypes)));
     $types = array();
     $keys = array();
     $matches = null;
-    foreach($list as $item) {
+    foreach ($list as $item) {
         if (preg_match('/^([^=]+)\s?=\s?(.*)$/', $item, $matches)) {
             $types[] = array('abbr' => trim($matches[1]), 'descr' => trim($matches[2]));
             $keys[] = trim($matches[1]);
         }
     }
-    return array('corrtypes' => $types, 'corrtypekeys' => $keys);
+    $coursecontext = context_course::instance($COURSE->id);
+    $disabled = false;
+    if (!has_capability('corrections:canmarkup', $coursecontext)) {
+         $disabled = true;
+    }
+    return ['corrtypes' => $types, 'corrtypekeys' => $keys, 'disabled' => $disabled];
 }
