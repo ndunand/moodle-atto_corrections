@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 $capabilities = [
-    'corrections:canmarkup' => [
+    'atto_corrections:canmarkup' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
