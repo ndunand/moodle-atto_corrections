@@ -48,4 +48,5 @@ $string['fulltexttitle'] = 'Texte avec marques de correction';
 $string['addmark'] = 'Ajouter une marque de correction';
 $string['removemark'] = 'Supprimer cette marque de correction';
 $string['displayfulltext'] = 'Afficher texte avec marques';
+$string['corrections:canmarkup'] = 'Utiliser les annotations';
 
