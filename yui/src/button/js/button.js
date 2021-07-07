@@ -225,7 +225,6 @@ Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_at
      */
     _displayDialogue: function(args, selectednode) {
 
-nnnn = selectednode;
         var ctype = false,
             ctext = false;
 
@@ -294,7 +293,6 @@ nnnn = selectednode;
             ctype = form.one(SELECTORS.SELECT).get('value'),
             ctext = form.one(SELECTORS.TEXTAREA).get('value'),
             host = this.get('host');
-ffff = form;
         if (ctype !== '') {
             // restore original selection, in order to be able to work on it
 //            return;
@@ -337,7 +335,7 @@ ffff = form;
      */
     _updateButtonsStates: function() {
         var el = this.get('host').getSelectionParentNode().parentNode,
-            sel = rangy.getSelection();
+            sel = window.rangy.getSelection();
 
         if (!sel.rangeCount) {
             this.disableButtons('corrections1');
