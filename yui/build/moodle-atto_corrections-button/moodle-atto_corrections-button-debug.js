@@ -163,6 +163,9 @@ Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_at
      * @private
      */
     _addCorrection: function(e, args) {
+        if (Y.one('.atto_form.' + CSS.FORM)) {
+            Y.one('.atto_form.' + CSS.FORM).remove();
+        }
         // Store the current selection.
         this._currentSelection = this.get('host').getSelection();
         if (this._currentSelection === false || this._currentSelection.collapsed) {
@@ -174,7 +177,6 @@ Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_at
             return;
         }
         this._displayDialogue(args, selectednode);
-//        console.log(args);
     },
 
     /**
