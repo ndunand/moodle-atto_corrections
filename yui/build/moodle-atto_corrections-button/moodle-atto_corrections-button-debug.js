@@ -104,6 +104,10 @@ YUI.add('moodle-atto_corrections-button', function (Y, NAME) {
         _isoncorr: null,
 
         initializer: function () {
+            // If we don't have the capability to view then give up.
+            if (this.get('disabled')) {
+                return;
+            }
             // add correction mark
             var items = [],
                 itemid = 0;
@@ -364,6 +368,15 @@ YUI.add('moodle-atto_corrections-button', function (Y, NAME) {
 
     }, {
         ATTRS: {
+            /**
+             * Disable the button based on capability
+             *
+             * @attribute disabled
+             * @type bool
+             */
+            disabled: {
+                value: false
+            },
             /**
              * The list of correction types to display.
              *

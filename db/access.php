@@ -15,19 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Atto text editor integration version file.
+ * Set up capabilities for atto corrections plugin
  *
  * @package    atto_corrections
- * @copyright  2014 Université de Lausanne
- * @author     Nicolas Dunand <nicolas.dunand@unil.ch>
+ * @copyright  2021 Marcus Green
+ * @author     Marcus Green
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2021070604;
-$plugin->requires  = 2014050800;
-$plugin->component = 'atto_corrections';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.0.8 for Moodle 2.7-3.5 (Build 2018050201)';
-
+$capabilities = [
+    'atto/corrections:canmarkup' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ],
+    ]
+];

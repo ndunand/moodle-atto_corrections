@@ -102,16 +102,10 @@ Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_at
     _isoncorr: null,
 
     initializer: function() {
-
-
-
-
-
-tttt = this; // TODO : remove
-
-
-
-
+        // If we don't have the capability to view then give up.
+        if (this.get('disabled')) {
+            return;
+        }
 
         // add correction mark
         var items = [],
@@ -372,6 +366,15 @@ ffff = form;
 
 }, {
     ATTRS: {
+        /**
+         * Disable the button based on capability
+         *
+         * @attribute disabled
+         * @type bool
+         */
+        disabled: {
+            value: false
+        },
         /**
          * The list of correction types to display.
          *

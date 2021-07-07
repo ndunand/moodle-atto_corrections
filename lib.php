@@ -46,6 +46,7 @@ function atto_corrections_strings_for_js() {
 /**
  * Set params for this plugin
  * @param string $elementid
+ * @throws \coding_exception
  */
 function atto_corrections_params_for_js($elementid, $options, $fpoptions) {
     // Pass the number of visible groups as a param.
@@ -54,11 +55,17 @@ function atto_corrections_params_for_js($elementid, $options, $fpoptions) {
     $types = array();
     $keys = array();
     $matches = null;
-    foreach($list as $item) {
+    foreach ($list as $item) {
         if (preg_match('/^([^=]+)\s?=\s?(.*)$/', $item, $matches)) {
             $types[] = array('abbr' => trim($matches[1]), 'descr' => trim($matches[2]));
             $keys[] = trim($matches[1]);
         }
     }
-    return array('corrtypes' => $types, 'corrtypekeys' => $keys);
+    $context = $options['context'];
+    if (!$context) {
+        $context = context_system::instance();
+    }
+    $disabled = !has_capability('atto/corrections:canmarkup', $context);
+
+    return ['corrtypes' => $types, 'corrtypekeys' => $keys, 'disabled' => $disabled];
 }
