@@ -118,7 +118,8 @@ Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_at
             itemid++;
         });
         this.addToolbarMenu({
-            icon: M.util.image_url('icon1', COMPONENTNAME),
+            icon: 'icon1',
+            iconComponent: COMPONENTNAME,
             globalItemConfig: {
                 callback: this._addCorrection
             },
@@ -129,7 +130,8 @@ Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_at
 
         // remove correction mark
         this.addButton({
-            icon: M.util.image_url('icon2', COMPONENTNAME),
+            icon: 'icon2',
+            iconComponent: COMPONENTNAME,
             callback: this._removeCorrection,
             tags: SELECTORS.SPAN,
             buttonName: 'corrections2',
@@ -138,7 +140,8 @@ Y.namespace('M.atto_corrections').Button = Y.Base.create('button', Y.M.editor_at
 
         // display full text with marks
         this.addButton({
-            icon: M.util.image_url('icon3', COMPONENTNAME),
+            icon: 'icon3',
+            iconComponent: COMPONENTNAME,
             callback: this._displayFulltext,
             buttonName: 'corrections3',
             title: 'displayfulltext'
